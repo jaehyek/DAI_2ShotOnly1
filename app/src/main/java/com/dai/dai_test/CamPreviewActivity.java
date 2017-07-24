@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
@@ -68,6 +69,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class CamPreviewActivity extends Activity {
+    static {
+        System.loadLibrary("native-lib");
+    }
+
+    public native void sendData(byte[] data);
+
     private TextureView mCameraTextureView;
     private Preview mPreview;
 
@@ -87,9 +94,9 @@ public class CamPreviewActivity extends Activity {
     private HandlerThread mBackgroundThread = null;
 	private Handler mBackgroundHandler;
     
-    Integer mSensorOrientation;
+    int mSensorOrientation;
     
-    private Integer mAfState;
+    int mAfState;
     private Float mFocusDistance;
     int mSaveNum = 0;
     boolean mPicSave = false;
@@ -241,7 +248,8 @@ public class CamPreviewActivity extends Activity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_picture: // Test code
-                	if(mAfState == 4) {
+//                	if(mAfState == 4)
+                  {
                 		
                 		mPicSave = true;                		
                         long now = System.currentTimeMillis();                        
@@ -249,8 +257,8 @@ public class CamPreviewActivity extends Activity {
                         SimpleDateFormat sdfNow = new SimpleDateFormat("yyyyMMdd_HHmmss");
                         mfileName = sdfNow.format(date);
                         mSaveNum = 0;
-                        mFDistance10 = mFocusDistance / 9.0f;
-                        mFDistance = mFocusDistance;
+//                        mFDistance10 = mFocusDistance / 9.0f;
+//                        mFDistance = mFocusDistance;
                         CamManual = true;
                         mPreview.takePicture(mFDistance, mfileName, mSaveNum);
                         Log.e(TAG, "save1 : "+mFDistance);
@@ -258,20 +266,21 @@ public class CamPreviewActivity extends Activity {
                         
                         
                 	}
-                	else {
-                		new AlertDialog.Builder(CamPreviewActivity.this)
-                        .setTitle("시작 불가")
-                        .setMessage("초점을 맞추거나 렌즈가 이동중입니다..\n잠시 후 다시 진행하세요.")
-                        .setNeutralButton("닫기", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dlg, int sumthin) {
-                            }
-                        })
-                        .show();
-                	}
+//                	else {
+//                		new AlertDialog.Builder(CamPreviewActivity.this)
+//                        .setTitle("시작 불가")
+//                        .setMessage("초점을 맞추거나 렌즈가 이동중입니다..\n잠시 후 다시 진행하세요.")
+//                        .setNeutralButton("닫기", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dlg, int sumthin) {
+//                            }
+//                        })
+//                        .show();
+//                	}
                 	
                     break;
                 case R.id.btn_s: // 2 picture
-                	if(mAfState == 4) {
+//                	if(mAfState == 4)
+                  {
                 		Log.e("Time Check", "take Picture button : " + TimeCheck());
                 		mPicSave = true;
                         long now = System.currentTimeMillis();
@@ -279,25 +288,25 @@ public class CamPreviewActivity extends Activity {
                         SimpleDateFormat sdfNow = new SimpleDateFormat("yyyyMMdd_HHmmss");
                         mfileName = sdfNow.format(date);
                         mSaveNum = 0;
-                        mFDistance10 = mFocusDistance / 9.0f;
-                        mFDistance = mFocusDistance;
+//                        mFDistance10 = mFocusDistance / 9.0f;
+//                        mFDistance = mFocusDistance;
                         CamManual = true;
                         mPreview.takePicture(mFDistance, mfileName, mSaveNum);
                         mSaveNum = 8;
                         Log.e(TAG, "save1 : "+mFDistance);
                         mPicSave10 = false;
                 	}
-                	else {
-                		new AlertDialog.Builder(CamPreviewActivity.this)
-                        .setTitle("시작 불가")
-                        .setMessage("초점을 맞추거나 렌즈가 이동중입니다..\n잠시 후 다시 진행하세요.")
-                        .setNeutralButton("닫기", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dlg, int sumthin) {
-                            }
-                        })
-                        .show();
-                	}                	
-                	break;                
+//                	else {
+//                		new AlertDialog.Builder(CamPreviewActivity.this)
+//                        .setTitle("시작 불가")
+//                        .setMessage("초점을 맞추거나 렌즈가 이동중입니다..\n잠시 후 다시 진행하세요.")
+//                        .setNeutralButton("닫기", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dlg, int sumthin) {
+//                            }
+//                        })
+//                        .show();
+//                	}
+                	break;
             }
         }
     };    
@@ -382,6 +391,7 @@ public class CamPreviewActivity extends Activity {
                
                 ImageReader mImageReader;
                 mImageReader = getMaxSizeImageReader(map, ImageFormat.JPEG);
+//                mImageReader = getMaxSizeImageReader(map, ImageFormat.FLEX_RGBA_8888);
                 float heightRatio = (float) mImageReader.getHeight() / height;
                 float widthRatio = (float) mImageReader.getWidth() / width;
                 float previewSizeW;
@@ -695,9 +705,9 @@ void configureTransformKeepAspect(TextureView textureView, int previewWidth, int
     			//characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
     						
     			 Range range1 = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
-                 int minmin = (Integer) range1.getLower();
-                 int maxmax = (Integer) range1.getUpper();
-                 Log.e(TAG, "minmin:"+minmin+ " maxmax:"+maxmax+"cameraId:"+cameraId);
+//                 int minmin = (Integer) range1.getLower();
+//                 int maxmax = (Integer) range1.getUpper();
+//                 Log.e(TAG, "minmin:"+minmin+ " maxmax:"+maxmax+"cameraId:"+cameraId);
                 /*
     			Size[] jpegSizes = null;
     			if (characteristics != null) {
@@ -713,16 +723,17 @@ void configureTransformKeepAspect(TextureView textureView, int previewWidth, int
                 if (map != null) {
                     jpegSizes = map.getOutputSizes(ImageFormat.JPEG);
                 }
-        	
+
                 if (jpegSizes != null && 0 < jpegSizes.length) {
                     width = jpegSizes[0].getWidth();
                     height = jpegSizes[0].getHeight();
-                }               
-                
+                }
+
                 Log.e(TAG, "width1:"+width+ " height1:"+height);
              
                 final ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, /*maxImages*/1);//ImageFormat.YUV_420_888, 3);
-                
+//                final ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.FLEX_RGBA_8888, /*maxImages*/1);//ImageFormat.YUV_420_888, 3);
+
                 List<Surface> outputSurfaces = new ArrayList<Surface>(2);
                 outputSurfaces.add(reader.getSurface());
                 ////outputSurfaces.add(new Surface(mTextureView.getSurfaceTexture())); //GN170404
@@ -775,6 +786,7 @@ void configureTransformKeepAspect(TextureView textureView, int previewWidth, int
     	                        byte[] bytes = new byte[buffer.capacity()];
     	                        buffer.get(bytes);
     	                        Log.e(TAG, "TEST-6");
+                                sendData(bytes);
     	                        save(bytes);
     	                        Log.e(TAG, "TEST-61");
     	                    } catch (FileNotFoundException e) {
@@ -870,7 +882,7 @@ void configureTransformKeepAspect(TextureView textureView, int previewWidth, int
     				    					  					
     					super.onCaptureCompleted(session, request, result);
     					
-    					startPreview();    					
+    					startPreview();
     				}
                 	
                 };
@@ -910,7 +922,7 @@ void configureTransformKeepAspect(TextureView textureView, int previewWidth, int
 
     private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {		
 		 
-		private void process(CaptureResult result) {  
+		private void process(CaptureResult result) {
 			mAfState = result.get(CaptureResult.CONTROL_AF_STATE);
 			mFocusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
 			Log.e(TAG, "process : "+result.get(CaptureResult.LENS_FOCUS_DISTANCE)+"CONTROL_AF_STATE : "+ mAfState);
@@ -939,16 +951,17 @@ void configureTransformKeepAspect(TextureView textureView, int previewWidth, int
 			}			
 		}
 		
-		 @Override 
-		  public void onCaptureProgressed( final CameraCaptureSession session, final CaptureRequest request, final CaptureResult partialResult) { 
-			 Log.e(TAG, "CaptureResult.LENS_FOCUS_DISTANCE af6 : "+partialResult.get(CaptureResult.LENS_FOCUS_DISTANCE));
-			 super.onCaptureProgressed(session, request, partialResult);
-		  } 
-		 
+        @Override
+        public void onCaptureProgressed( final CameraCaptureSession session, final CaptureRequest request, final CaptureResult partialResult) {
+            Log.e(TAG, "CaptureResult.LENS_FOCUS_DISTANCE af6 : "+partialResult.get(CaptureResult.LENS_FOCUS_DISTANCE));
+//            super.onCaptureProgressed(session, request, partialResult);
+            process(partialResult);
+        }
+
 		@Override
 		public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
 			
-			super.onCaptureCompleted(session, request, result);
+//			super.onCaptureCompleted(session, request, result);
 			process(result);
 		}
   };
